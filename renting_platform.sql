@@ -1,159 +1,261 @@
--- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2022-09-12 14:31:40.494
+-- MySQL Workbench Forward Engineering
 
--- tables
--- Table: adress
-CREATE TABLE adress (
-    id int NOT NULL AUTO_INCREMENT,
-    street varchar(45) NOT NULL,
-    house_number int NULL,
-    city_id int NOT NULL,
-    CONSTRAINT adress_pk PRIMARY KEY (id)
-);
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
--- Table: cash_withdrawal_from_lessee_to_service
-CREATE TABLE cash_withdrawal_from_lessee_to_service (
-    id int NOT NULL,
-    price int NOT NULL,
-    reservation_id int NOT NULL,
-    CONSTRAINT cash_withdrawal_from_lessee_to_service_pk PRIMARY KEY (id)
-);
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema new_schema1
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema rent_platform
+-- -----------------------------------------------------
 
--- Table: cash_withdrawal_from_service_to_owner
-CREATE TABLE cash_withdrawal_from_service_to_owner (
-    id int NOT NULL,
-    price int NOT NULL,
-    cash_withdrawal_from_lessee_to_service_id int NOT NULL,
-    CONSTRAINT cash_withdrawal_from_service_to_owner_pk PRIMARY KEY (id)
-);
+-- -----------------------------------------------------
+-- Schema rent_platform
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `rent_platform` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `rent_platform` ;
 
--- Table: city
-CREATE TABLE city (
-    id int NOT NULL AUTO_INCREMENT,
-    name varchar(35) NOT NULL,
-    region_id int NOT NULL,
-    CONSTRAINT city_pk PRIMARY KEY (id)
-);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`region`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`region` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Table: dwelling
-CREATE TABLE dwelling (
-    id int NOT NULL AUTO_INCREMENT,
-    area int NOT NULL,
-    floor int NOT NULL,
-    rooms_number int NOT NULL,
-    adress_id int NOT NULL,
-    dwelling_owner_id int NOT NULL,
-    reservation_id int NOT NULL,
-    description varchar(100) NOT NULL,
-    CONSTRAINT dwelling_pk PRIMARY KEY (id)
-);
 
--- Table: dwelling_owner
-CREATE TABLE dwelling_owner (
-    id int NOT NULL AUTO_INCREMENT,
-    name varchar(25) NOT NULL,
-    surname varchar(50) NOT NULL,
-    phome varchar(12) NOT NULL,
-    email varchar(35) NOT NULL,
-    CONSTRAINT dwelling_owner_pk PRIMARY KEY (id)
-);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`city`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`city` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(35) NOT NULL,
+  `region_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `city_region` (`region_id` ASC) VISIBLE,
+  CONSTRAINT `city_region`
+    FOREIGN KEY (`region_id`)
+    REFERENCES `rent_platform`.`region` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Table: dwelling_photo
-CREATE TABLE dwelling_photo (
-    id int NOT NULL,
-    dwelling_id int NULL,
-    name varchar(35) NULL,
-    CONSTRAINT dwelling_photo_pk PRIMARY KEY (id)
-);
 
--- Table: lessee
-CREATE TABLE lessee (
-    id int NOT NULL AUTO_INCREMENT,
-    name varchar(25) NOT NULL,
-    surname varchar(50) NOT NULL,
-    phone varchar(12) NOT NULL,
-    email varchar(35) NOT NULL,
-    CONSTRAINT lessee_pk PRIMARY KEY (id)
-);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`adress`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`adress` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `street` VARCHAR(45) NOT NULL,
+  `house_number` INT NULL DEFAULT NULL,
+  `city_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `adress_city` (`city_id` ASC) VISIBLE,
+  CONSTRAINT `adress_city`
+    FOREIGN KEY (`city_id`)
+    REFERENCES `rent_platform`.`city` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Table: lessee_feedback
-CREATE TABLE lessee_feedback (
-    rating int NOT NULL AUTO_INCREMENT,
-    response varchar(100) NOT NULL,
-    lessee_id int NULL,
-    CONSTRAINT lessee_feedback_pk PRIMARY KEY (rating)
-);
 
--- Table: owner_feedback
-CREATE TABLE owner_feedback (
-    rating int NOT NULL AUTO_INCREMENT,
-    response varchar(100) NOT NULL,
-    dwelling_owner_id int NULL,
-    CONSTRAINT owner_feedback_pk PRIMARY KEY (rating)
-);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`platform_user`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`platform_user` (
+  `id` INT NOT NULL,
+  `email` VARCHAR(100) NULL,
+  `phone` VARCHAR(12) NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE,
+  UNIQUE INDEX `phone_UNIQUE` (`phone` ASC) VISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Table: region
-CREATE TABLE region (
-    id int NOT NULL AUTO_INCREMENT,
-    name varchar(50) NOT NULL,
-    CONSTRAINT region_pk PRIMARY KEY (id)
-);
 
--- Table: reservation
-CREATE TABLE reservation (
-    id int NOT NULL AUTO_INCREMENT,
-    is_possible bool NOT NULL,
-    lessee_id int NOT NULL,
-    name varchar(35) NULL,
-    time timestamp NOT NULL,
-    how_long time NOT NULL,
-    is_confirmed bool NOT NULL,
-    CONSTRAINT reservation_pk PRIMARY KEY (id)
-);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`lessee`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`lessee` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(25) NOT NULL,
+  `surname` VARCHAR(50) NOT NULL,
+  `platform_user_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `lessee_platform_user` (`platform_user_id` ASC) VISIBLE,
+  CONSTRAINT `lessee_platform_user`
+    FOREIGN KEY (`platform_user_id`)
+    REFERENCES `rent_platform`.`platform_user` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- foreign keys
--- Reference: adress_city (table: adress)
-ALTER TABLE adress ADD CONSTRAINT adress_city FOREIGN KEY adress_city (city_id)
-    REFERENCES city (id);
 
--- Reference: cash_withdrawal_from_lessee_to_service_reservation (table: cash_withdrawal_from_lessee_to_service)
-ALTER TABLE cash_withdrawal_from_lessee_to_service ADD CONSTRAINT cash_withdrawal_from_lessee_to_service_reservation FOREIGN KEY cash_withdrawal_from_lessee_to_service_reservation (reservation_id)
-    REFERENCES reservation (id);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`reservation`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`reservation` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `is_possible` TINYINT(1) NOT NULL,
+  `lessee_id` INT NOT NULL,
+  `name` VARCHAR(35) NULL DEFAULT NULL,
+  `time` TIMESTAMP NOT NULL,
+  `how_long` TIME NOT NULL,
+  `is_confirmed` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `reservation_lessee` (`lessee_id` ASC) VISIBLE,
+  CONSTRAINT `reservation_lessee`
+    FOREIGN KEY (`lessee_id`)
+    REFERENCES `rent_platform`.`lessee` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Reference: city_region (table: city)
-ALTER TABLE city ADD CONSTRAINT city_region FOREIGN KEY city_region (region_id)
-    REFERENCES region (id);
 
--- Reference: dwelling_adress (table: dwelling)
-ALTER TABLE dwelling ADD CONSTRAINT dwelling_adress FOREIGN KEY dwelling_adress (adress_id)
-    REFERENCES adress (id);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`cash_withdrawal_from_lessee_to_service`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`cash_withdrawal_from_lessee_to_service` (
+  `id` INT NOT NULL,
+  `price` INT NOT NULL,
+  `reservation_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `cash_withdrawal_from_lessee_to_service_reservation` (`reservation_id` ASC) VISIBLE,
+  CONSTRAINT `cash_withdrawal_from_lessee_to_service_reservation`
+    FOREIGN KEY (`reservation_id`)
+    REFERENCES `rent_platform`.`reservation` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Reference: dwelling_dwelling_owner (table: dwelling)
-ALTER TABLE dwelling ADD CONSTRAINT dwelling_dwelling_owner FOREIGN KEY dwelling_dwelling_owner (dwelling_owner_id)
-    REFERENCES dwelling_owner (id);
 
--- Reference: dwelling_photo_dwelling (table: dwelling_photo)
-ALTER TABLE dwelling_photo ADD CONSTRAINT dwelling_photo_dwelling FOREIGN KEY dwelling_photo_dwelling (dwelling_id)
-    REFERENCES dwelling (id);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`cash_withdrawal_from_service_to_owner`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`cash_withdrawal_from_service_to_owner` (
+  `id` INT NOT NULL,
+  `price` INT NOT NULL,
+  `cash_withdrawal_from_lessee_to_service_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `withdrawal_service_owner_cash_withdrawal_from_lessee_to_service` (`cash_withdrawal_from_lessee_to_service_id` ASC) VISIBLE,
+  CONSTRAINT `withdrawal_service_owner_cash_withdrawal_from_lessee_to_service`
+    FOREIGN KEY (`cash_withdrawal_from_lessee_to_service_id`)
+    REFERENCES `rent_platform`.`cash_withdrawal_from_lessee_to_service` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Reference: dwelling_reservation (table: dwelling)
-ALTER TABLE dwelling ADD CONSTRAINT dwelling_reservation FOREIGN KEY dwelling_reservation (reservation_id)
-    REFERENCES reservation (id);
 
--- Reference: lessee_feedback_lessee (table: lessee_feedback)
-ALTER TABLE lessee_feedback ADD CONSTRAINT lessee_feedback_lessee FOREIGN KEY lessee_feedback_lessee (lessee_id)
-    REFERENCES lessee (id);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`dwelling_owner`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`dwelling_owner` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(25) NOT NULL,
+  `surname` VARCHAR(50) NOT NULL,
+  `platform_user_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `dwelling_owner_platform_user` (`platform_user_id` ASC) VISIBLE,
+  CONSTRAINT `dwelling_owner_platform_user`
+    FOREIGN KEY (`platform_user_id`)
+    REFERENCES `rent_platform`.`platform_user` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Reference: owner_feedback_dwelling_owner (table: owner_feedback)
-ALTER TABLE owner_feedback ADD CONSTRAINT owner_feedback_dwelling_owner FOREIGN KEY owner_feedback_dwelling_owner (dwelling_owner_id)
-    REFERENCES dwelling_owner (id);
 
--- Reference: reservation_lessee (table: reservation)
-ALTER TABLE reservation ADD CONSTRAINT reservation_lessee FOREIGN KEY reservation_lessee (lessee_id)
-    REFERENCES lessee (id);
+-- -----------------------------------------------------
+-- Table `rent_platform`.`dwelling`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`dwelling` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `area` INT NOT NULL,
+  `floor` INT NOT NULL,
+  `rooms_number` INT NOT NULL,
+  `adress_id` INT NOT NULL,
+  `dwelling_owner_id` INT NOT NULL,
+  `reservation_id` INT NOT NULL,
+  `description` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `dwelling_adress` (`adress_id` ASC) VISIBLE,
+  INDEX `dwelling_dwelling_owner` (`dwelling_owner_id` ASC) VISIBLE,
+  INDEX `dwelling_reservation` (`reservation_id` ASC) VISIBLE,
+  CONSTRAINT `dwelling_adress`
+    FOREIGN KEY (`adress_id`)
+    REFERENCES `rent_platform`.`adress` (`id`),
+  CONSTRAINT `dwelling_dwelling_owner`
+    FOREIGN KEY (`dwelling_owner_id`)
+    REFERENCES `rent_platform`.`dwelling_owner` (`id`),
+  CONSTRAINT `dwelling_reservation`
+    FOREIGN KEY (`reservation_id`)
+    REFERENCES `rent_platform`.`reservation` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
--- Reference: withdrawal_service_owner_cash_withdrawal_from_lessee_to_service (table: cash_withdrawal_from_service_to_owner)
-ALTER TABLE cash_withdrawal_from_service_to_owner ADD CONSTRAINT withdrawal_service_owner_cash_withdrawal_from_lessee_to_service FOREIGN KEY withdrawal_service_owner_cash_withdrawal_from_lessee_to_service (cash_withdrawal_from_lessee_to_service_id)
-    REFERENCES cash_withdrawal_from_lessee_to_service (id);
 
--- End of file.
+-- -----------------------------------------------------
+-- Table `rent_platform`.`dwelling_photo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`dwelling_photo` (
+  `id` INT NOT NULL,
+  `dwelling_id` INT NULL DEFAULT NULL,
+  `name` VARCHAR(35) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `dwelling_photo_dwelling` (`dwelling_id` ASC) VISIBLE,
+  CONSTRAINT `dwelling_photo_dwelling`
+    FOREIGN KEY (`dwelling_id`)
+    REFERENCES `rent_platform`.`dwelling` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `rent_platform`.`lessee_feedback`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`lessee_feedback` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `rating` INT NOT NULL,
+  `response` VARCHAR(100) NOT NULL,
+  `lessee_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `lessee_feedback_lessee` (`lessee_id` ASC) VISIBLE,
+  CONSTRAINT `lessee_feedback_lessee`
+    FOREIGN KEY (`lessee_id`)
+    REFERENCES `rent_platform`.`lessee` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `rent_platform`.`owner_feedback`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rent_platform`.`owner_feedback` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `rating` INT NOT NULL,
+  `response` VARCHAR(100) NOT NULL,
+  `dwelling_owner_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `owner_feedback_dwelling_owner` (`dwelling_owner_id` ASC) VISIBLE,
+  CONSTRAINT `owner_feedback_dwelling_owner`
+    FOREIGN KEY (`dwelling_owner_id`)
+    REFERENCES `rent_platform`.`dwelling_owner` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

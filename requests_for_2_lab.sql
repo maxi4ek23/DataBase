@@ -41,13 +41,8 @@ concat('yes(',
 FROM Product WHERE type='printer' GROUP BY maker HAVING maker=P.maker ), ')') ELSE 'no'
 END AS printers FROM Product P GROUP BY maker;
 
-SELECT class, sum(ships_count) AS ships_count
-FROM
-(
-	SELECT class, count(class) AS ships_count FROM Ships GROUP BY class 
-	UNION 
-	SELECT class, count(class) AS ships_count FROM Classes GROUP BY class 
-) unions
-GROUP BY class;
+SELECT class, count(class) AS ships_count FROM Ships GROUP BY class;
+	
+
 
 

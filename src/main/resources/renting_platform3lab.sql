@@ -333,7 +333,9 @@ insert into cash_withdrawal_from_service_to_owner (price, cash_withdrawal_from_l
 ('7500', '9'),
 ('5500', '10');
 
-
+show index from city;
+show index from lessee;
+show index from dwelling;
 
 
 

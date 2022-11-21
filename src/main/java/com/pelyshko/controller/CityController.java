@@ -54,4 +54,10 @@ public class CityController {
     	cityService.delete(cityId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    
+    @GetMapping(value = "/avg_population")
+    public ResponseEntity<Double> getAvgPopulation() {
+        double avgPopulation = cityService.getAvgPopulation();
+        return new ResponseEntity<>(avgPopulation, HttpStatus.OK);
+    }
 }

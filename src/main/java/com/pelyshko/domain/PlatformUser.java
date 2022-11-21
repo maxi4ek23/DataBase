@@ -1,5 +1,7 @@
 package com.pelyshko.domain;
 
+import java.util.Set;
+
 import javax.persistence.*;
 import lombok.Data;
 
@@ -25,4 +27,7 @@ public class PlatformUser {
 	
     @OneToOne(mappedBy = "platformUser")
     private DwellingOwner dwellingOwner;
+    
+    @ManyToMany(mappedBy = "platformUsers")
+    private Set<Dwelling> dwellings;
 }

@@ -3,10 +3,12 @@ package com.pelyshko.domain;
 import javax.persistence.*;
 import java.util.List;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "adress", schema = "rent")
 @Data
+@NoArgsConstructor
 public class Adress {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id

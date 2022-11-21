@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pelyshko.domain.Dwelling;
+import com.pelyshko.domain.PlatformUser;
 import com.pelyshko.dto.DwellingDto;
+import com.pelyshko.dto.PlatformUserDto;
 import com.pelyshko.dto.assembler.DwellingDtoAssembler;
 import com.pelyshko.service.DwellingService;
+
+import net.minidev.json.JSONObject;
 
 
 @RestController
@@ -67,5 +71,11 @@ public class DwellingController {
     	List<Dwelling> dwellingsList = dwellingService.findDwellingsByDwellingOwnerSurname(dwellingOwnerSurname);
     	CollectionModel<DwellingDto> dwellingDtos = dwellingDtoAssembler.toCollectionModel(dwellingsList);
     	return new ResponseEntity<>(dwellingDtos, HttpStatus.OK);
+    }
+    
+    @PostMapping(value = "/manyToManyRelationship")
+    public void createManyToManyRelationShip( Integer dwellId, Integer userId) {
+    	dwellingService.createManyToManyRelationship(dwellId ,userId);
+  
     }
 }

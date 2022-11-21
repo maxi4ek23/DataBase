@@ -3,10 +3,12 @@ package com.pelyshko.domain;
 
 import javax.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "cash_withdrawal_from_service_to_owner", schema = "rent")
 @Data
+@NoArgsConstructor
 public class CashWithdrawalFromServiceToOwner {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id

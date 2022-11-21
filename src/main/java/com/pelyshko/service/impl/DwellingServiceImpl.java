@@ -68,4 +68,9 @@ public class DwellingServiceImpl implements DwellingService {
         
         return dwellingOwners.stream().map(dwellingOwner -> dwellingOwner.getDwellings()).flatMap(Collection::stream).collect(Collectors.toList());
 	}
+	
+	@Override
+	public void createManyToManyRelationship(Integer dwellId, Integer userId) {
+		dwellingRepository.createManyToManyRelationship(dwellId, userId);
+	}
 }

@@ -18,6 +18,10 @@ public class City {
 	@Column(name = "name", length = 50)
     private String name;
 	
+	@Basic
+	@Column(name = "population")
+    private Integer population;
+	
 	@ManyToOne
 	@JoinColumn(name = "region_id", referencedColumnName = "id")
 	private Region region;

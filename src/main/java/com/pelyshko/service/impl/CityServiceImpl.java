@@ -51,4 +51,9 @@ public class CityServiceImpl implements CityService {
                 .orElseThrow(() -> new CityNotFoundException(id));
 		cityRepository.delete(city);
     }
+	
+	@Override
+	public Double getAvgPopulation() {
+		return cityRepository.getAvgPopulation();
+	}
 }

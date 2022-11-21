@@ -1,6 +1,8 @@
 package com.pelyshko.domain;
 
 
+import java.util.Set;
+
 import javax.persistence.*;
 import lombok.Data;
 
@@ -40,4 +42,8 @@ public class Dwelling {
 	@ManyToOne
 	@JoinColumn(name = "dwelling_owner_id", referencedColumnName = "id")
 	private DwellingOwner dwellingOwner;
+	
+	@ManyToMany
+    @JoinTable(name = "user_dwelling", schema = "rent", joinColumns = @JoinColumn(name = "dwelling_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "platform_user_id", referencedColumnName = "id"))
+    private Set<PlatformUser> platformUsers;
 }
